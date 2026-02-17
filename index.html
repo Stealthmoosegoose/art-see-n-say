@@ -9,9 +9,6 @@
       --bg:#0b1020;
       --panel:#0f1733;
 
-      --ring:#ffd35c;
-      --ring2:#f3b528;
-
       --toyYellow:#ffd35c;
       --toyYellow2:#f0b72f;
       --toyBlue:#1a7bd6;
@@ -58,7 +55,7 @@
       overflow:hidden;
     }
 
-    /* Toy silhouette: handle + stand */
+    /* Toy silhouette */
     .toyFrame{
       position:relative;
       width:min(560px, 100%);
@@ -96,7 +93,6 @@
       display:grid;
       place-items:center;
     }
-
     .toyStand{
       position:absolute;
       left: 12%;
@@ -110,7 +106,7 @@
       z-index:0;
     }
 
-    /* Pointer (top indicator) */
+    /* Pointer */
     .pointer{
       position:absolute;
       top: 40px;
@@ -124,14 +120,14 @@
       z-index:6;
     }
 
-    /* Outer ring */
+    /* Ring */
     .ring{
       position:absolute;
       inset: 7.5%;
       border-radius: 50%;
       background:
         radial-gradient(circle at 50% 35%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 46%),
-        linear-gradient(180deg, #ffe08b 0%, var(--ring) 55%, var(--ring2) 100%);
+        linear-gradient(180deg, #ffe08b 0%, var(--toyYellow) 55%, var(--toyYellow2) 100%);
       box-shadow:
         inset 0 0 0 10px rgba(0,0,0,.08),
         inset 0 -14px 18px rgba(0,0,0,.12),
@@ -139,7 +135,7 @@
       z-index:1;
     }
 
-    /* Spinning wheel (wedges) */
+    /* Wheel uses conic-gradient so slices are guaranteed equal */
     .wheel{
       position:absolute;
       inset: 12%;
@@ -149,62 +145,50 @@
       will-change: transform;
       box-shadow: inset 0 0 0 10px rgba(0,0,0,.10);
       z-index:2;
-      background: rgba(255,255,255,.05);
+      background: rgba(255,255,255,.06);
     }
-    .wedge{
-      position:absolute;
-      inset:0;
-      clip-path: polygon(50% 50%, 0% 0%, 100% 0%);
-      transform-origin: 50% 50%;
-      display:block;
-    }
-    .wedge::after{
+    .wheel::after{
       content:"";
       position:absolute;
       inset:0;
-      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(0,0,0,.10));
+      background: radial-gradient(circle at 45% 30%, rgba(255,255,255,.22), rgba(0,0,0,.10));
       mix-blend-mode: overlay;
       pointer-events:none;
     }
 
-    .wedge span{
+    /* Icons layer (absolute, rotates with wheel) */
+    .icons{
       position:absolute;
-      left:50%;
-      top: 10%;
-      transform: translateX(-50%) rotate(0deg);
-      width: 78%;
-      text-align:center;
-      font-size: 14px;
-      font-weight: 800;
-      color: rgba(0,0,0,.75);
-      text-shadow: 0 1px 0 rgba(255,255,255,.35);
-      user-select:none;
+      inset:0;
+      transform: rotate(0deg);
+      transform-origin: 50% 50%;
       pointer-events:none;
-      line-height: 1.05;
     }
-    .wedge .thumb{
+    .iconSlot{
       position:absolute;
       left:50%;
-      top: 29%;
-      transform: translateX(-50%);
-      width: 64px;
-      height: 64px;
+      top:50%;
+      width: 68px;
+      height: 68px;
+      transform-origin: 0 0;
+      display:grid;
+      place-items:center;
       border-radius: 50%;
-      background-size: cover;
-      background-position: center;
-      border: 6px solid rgba(255,255,255,.85);
-      box-shadow: 0 10px 16px rgba(0,0,0,.25);
-      display:none;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 12px 18px rgba(0,0,0,.22);
+      border: 6px solid rgba(255,255,255,.78);
     }
-    .wedge.hasImage .thumb{ display:block; }
-    .wedge.hasImage span{ top: 10%; }
-
-    @media (max-width: 520px){
-      .wedge span{font-size:12px;}
-      .wedge .thumb{ width:54px; height:54px; border-width:5px; }
+    .iconSlot svg{
+      width: 38px;
+      height: 38px;
+      opacity: .9;
+    }
+    @media (max-width:520px){
+      .iconSlot{ width:56px; height:56px; }
+      .iconSlot svg{ width:32px; height:32px; }
     }
 
-    /* Center disc */
+    /* Center */
     .center{
       position:absolute;
       inset: 35%;
@@ -223,8 +207,7 @@
       width: 76%;
       aspect-ratio: 1 / 1;
       border-radius: 50%;
-      background:
-        radial-gradient(circle at 40% 35%, #2fa0ff 0%, var(--toyBlue) 60%, var(--toyBlue2) 100%);
+      background: radial-gradient(circle at 40% 35%, #2fa0ff 0%, var(--toyBlue) 60%, var(--toyBlue2) 100%);
       box-shadow: inset 0 0 0 10px rgba(0,0,0,.12);
       display:grid;
       place-items:center;
@@ -278,7 +261,7 @@
     .handle:active{ transform: translateY(1px); }
     .handle svg{opacity:.92}
 
-    /* Right panel */
+    /* Panel */
     .panel{
       background: rgba(255,255,255,.04);
       border: 1px solid rgba(255,255,255,.08);
@@ -286,25 +269,10 @@
       padding: 18px;
       box-shadow: var(--shadow);
     }
-    .panel h1{
-      font-size: 18px;
-      margin: 0 0 10px;
-      letter-spacing:.2px;
-    }
-    .panel p{
-      margin: 0 0 12px;
-      color: var(--muted);
-      line-height: 1.35;
-      font-size: 14px;
-    }
+    .panel h1{ font-size: 18px; margin: 0 0 10px; letter-spacing:.2px; }
+    .panel p{ margin: 0 0 12px; color: var(--muted); line-height: 1.35; font-size: 14px; }
 
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin-top: 10px;
-    }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top: 10px; }
 
     button{
       appearance:none;
@@ -348,17 +316,9 @@
       line-height:1.35;
       outline:none;
     }
-    .hint{
-      margin-top:10px;
-      font-size:12px;
-      color: rgba(255,255,255,.65);
-      line-height: 1.35;
-    }
+    .hint{ margin-top:10px; font-size:12px; color: rgba(255,255,255,.65); line-height: 1.35; }
 
-    .locked textarea{ display:none; }
-    .locked #apply{ display:none; }
-    .locked #editorLabel{ display:none; }
-    .locked #formatHint{ display:none; }
+    .locked textarea, .locked #apply, .locked #editorLabel, .locked #formatHint { display:none; }
 
     /* Overlay */
     .overlay{
@@ -373,10 +333,8 @@
       padding: 24px;
       z-index:50;
     }
-    .overlay.show{
-      opacity:1;
-      pointer-events:auto;
-    }
+    .overlay.show{ opacity:1; pointer-events:auto; }
+
     .overlayCard{
       width:min(860px, 100%);
       background: rgba(15, 23, 51, .92);
@@ -385,7 +343,6 @@
       padding: 18px 18px 16px;
       box-shadow: var(--shadow);
       display:grid;
-      grid-template-columns: 1fr;
       gap: 12px;
     }
     .overlayCard .q{
@@ -394,11 +351,7 @@
       line-height:1.12;
       margin: 0;
     }
-    .overlayCard .sub{
-      margin:0;
-      color: rgba(255,255,255,.70);
-      font-size: 13px;
-    }
+    .overlayCard .sub{ margin:0; color: rgba(255,255,255,.70); font-size: 13px; }
     .overlayImg{
       width: min(520px, 100%);
       aspect-ratio: 4 / 3;
@@ -419,12 +372,14 @@
       <div class="toyFrame">
         <div class="toyHandle" aria-hidden="true"></div>
 
-        <div class="toy" aria-label="See 'N Say critique wheel">
+        <div class="toy" aria-label="Critique wheel">
           <div class="toyStand" aria-hidden="true"></div>
           <div class="pointer" aria-hidden="true"></div>
           <div class="ring" aria-hidden="true"></div>
 
-          <div id="wheel" class="wheel" role="img" aria-label="Spinning question wheel"></div>
+          <div id="wheel" class="wheel" role="img" aria-label="Spinning icon wheel">
+            <div id="icons" class="icons" aria-hidden="true"></div>
+          </div>
 
           <div id="center" class="center" aria-label="Center badge (long-press to unlock when locked)">
             <div class="badge">
@@ -449,7 +404,7 @@
 
     <aside id="panel" class="panel">
       <h1>Critique See ’N Say</h1>
-      <p>Tap the pull handle to spin. The wheel lands on a question, shows it big, and speaks it out loud.</p>
+      <p>Tap the pull handle to spin. It lands on an icon; the question appears large and speaks out loud.</p>
 
       <div class="row">
         <button id="spin">Spin</button>
@@ -464,8 +419,8 @@
         </label>
 
         <label class="pill">
-          <input id="showThumbs" type="checkbox" checked />
-          Show image thumbnails
+          <input id="showOverlayImg" type="checkbox" checked />
+          Show selected image in overlay
         </label>
       </div>
 
@@ -475,8 +430,9 @@
       <textarea id="questions"></textarea>
 
       <div id="formatHint" class="hint">
-        Optional image format: <b>Question | imageURL</b><br/>
-        Example: <i>Why is it so heavy? | https://example.com/heavy.jpg</i>
+        Optional format: <b>Question | imageURL | iconKey</b><br/>
+        iconKey options: <i>small, heavy, light, sit, surface, change, risk, focus, quiet, intent, unresolved, notice</i><br/>
+        Example: <i>Why is it so heavy? | https://example.com/heavy.jpg | heavy</i>
       </div>
 
       <div class="row">
@@ -484,8 +440,8 @@
       </div>
 
       <div class="hint">
-        Mobile note: browsers often require a tap before voice works. Use “Enable / Test voice” once.<br/>
-        Locked note: long-press the <b>center badge</b> ~0.8s to unlock.
+        Locked note: long-press the <b>center badge</b> ~0.8s to unlock.<br/>
+        Voice note: on mobile, do “Enable / Test voice” once.
       </div>
     </aside>
   </div>
@@ -499,21 +455,46 @@
   </div>
 
   <script>
+    // ===== CONFIG =====
+    // Minimum full rotations before stopping (set to 1 if you truly want only one).
+    const MIN_FULL_ROTATIONS = 3;
+
+    // ===== Icon library (inline SVG) =====
+    // Pottery-ish set, plus a few abstract critique concepts.
+    const ICONS = {
+      small: svg(`<circle cx="12" cy="12" r="7"/><path d="M5 12h14" stroke-width="2" fill="none"/>`),
+      heavy: svg(`<path d="M7 10h10l-1 9H8l-1-9Z"/><path d="M9 10V7a3 3 0 0 1 6 0v3" fill="none" stroke-width="2"/>`),
+      light: svg(`<path d="M12 3c3 4 3 7 0 11-3-4-3-7 0-11Z"/><path d="M6 19h12" fill="none" stroke-width="2"/>`),
+      sit: svg(`<path d="M6 18h12" fill="none" stroke-width="2"/><path d="M8 16c2-3 6-3 8 0" fill="none" stroke-width="2"/><circle cx="12" cy="10" r="4"/>`),
+      surface: svg(`<path d="M5 7h14M5 12h14M5 17h14" fill="none" stroke-width="2"/><path d="M7 5v14" fill="none" stroke-width="2"/>`),
+      change: svg(`<path d="M7 7h10v10H7z"/><path d="M9 9l6 6M15 9l-6 6" fill="none" stroke-width="2"/>`),
+      risk: svg(`<path d="M12 3l10 18H2L12 3Z"/><path d="M12 9v5" fill="none" stroke-width="2"/><circle cx="12" cy="17" r="1.2"/>`),
+      focus: svg(`<circle cx="12" cy="12" r="8" fill="none" stroke-width="2"/><circle cx="12" cy="12" r="3"/>`),
+      quiet: svg(`<path d="M7 10v4c0 2 2 4 5 4s5-2 5-4v-4" fill="none" stroke-width="2"/><path d="M9 8c1-2 5-2 6 0" fill="none" stroke-width="2"/>`),
+      intent: svg(`<path d="M4 12h8" fill="none" stroke-width="2"/><path d="M10 8l4 4-4 4" fill="none" stroke-width="2"/><circle cx="16.5" cy="12" r="3.5"/>`),
+      unresolved: svg(`<path d="M6 8c2-4 10-4 12 0" fill="none" stroke-width="2"/><path d="M6 16c2 4 10 4 12 0" fill="none" stroke-width="2"/><path d="M10 12h4" fill="none" stroke-width="2"/>`),
+      notice: svg(`<path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/>`)
+    };
+
+    function svg(inner){
+      return `<svg viewBox="0 0 24 24" fill="rgba(0,0,0,.75)" xmlns="http://www.w3.org/2000/svg" stroke="rgba(0,0,0,.75)">${inner}</svg>`;
+    }
+
     // ===== Data model =====
-    // Each entry: { text: string, img?: string }
+    // Each entry: { text, img?, iconKey? }
     const DEFAULT_ITEMS = [
-      { text: "Why is it so small?" },
-      { text: "Why is it so heavy?" },
-      { text: "Why is it so light?" },
-      { text: "Why does it sit like that?" },
-      { text: "What decision feels most intentional here?" },
-      { text: "What feels unresolved?" },
-      { text: "Where does the surface help (or fight) the form?" },
-      { text: "What would you change if you made it again?" },
-      { text: "What’s the strongest part of this piece?" },
-      { text: "What’s the quietest part of this piece?" },
-      { text: "What’s the piece asking the viewer to notice?" },
-      { text: "What’s one risk you could push further?" }
+      { text: "Why is it so small?", iconKey: "small" },
+      { text: "Why is it so heavy?", iconKey: "heavy" },
+      { text: "Why is it so light?", iconKey: "light" },
+      { text: "Why does it sit like that?", iconKey: "sit" },
+      { text: "What decision feels most intentional here?", iconKey: "intent" },
+      { text: "What feels unresolved?", iconKey: "unresolved" },
+      { text: "Where does the surface help (or fight) the form?", iconKey: "surface" },
+      { text: "What would you change if you made it again?", iconKey: "change" },
+      { text: "What’s the strongest part of this piece?", iconKey: "focus" },
+      { text: "What’s the quietest part of this piece?", iconKey: "quiet" },
+      { text: "What’s the piece asking the viewer to notice?", iconKey: "notice" },
+      { text: "What’s one risk you could push further?", iconKey: "risk" }
     ];
 
     const WEDGE_COLORS = [
@@ -523,6 +504,7 @@
 
     // ===== Elements =====
     const wheelEl = document.getElementById("wheel");
+    const iconsEl = document.getElementById("icons");
     const handleEl = document.getElementById("handle");
     const stringEl = document.getElementById("string");
     const centerEl = document.getElementById("center");
@@ -540,44 +522,38 @@
     const lockBtn = document.getElementById("lockBtn");
 
     const noRepeatsChk = document.getElementById("noRepeats");
-    const showThumbsChk = document.getElementById("showThumbs");
+    const showOverlayImgChk = document.getElementById("showOverlayImg");
 
     // ===== State =====
     let items = [...DEFAULT_ITEMS];
     let isSpinning = false;
     let currentRotation = 0; // degrees
+    let bag = []; // for no-repeats
 
-    // deterministic bag (no repeats until empty)
-    let bag = [];
-
-    // Persisted preferences
     const LS = {
       locked: "sns_locked",
       noRepeats: "sns_norepeats",
-      showThumbs: "sns_showthumbs",
-      items: "sns_items_v1"
+      showOverlayImg: "sns_showOverlayImg",
+      items: "sns_items_v2"
     };
 
     // ===== Speech =====
     function speak(text){
       try{
         window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.rate = 1.0;
-        utter.pitch = 1.0;
-        utter.volume = 1.0;
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
         const voices = window.speechSynthesis.getVoices?.() || [];
         const en = voices.find(v => /en/i.test(v.lang));
-        if(en) utter.voice = en;
-        window.speechSynthesis.speak(utter);
-      }catch(e){
-        // ignore
-      }
+        if(en) u.voice = en;
+        window.speechSynthesis.speak(u);
+      }catch(e){}
     }
 
     function showOverlay(text, imgUrl){
       overlayTextEl.textContent = text;
-      if(imgUrl && showThumbsChk.checked){
+
+      if(showOverlayImgChk.checked && imgUrl){
         overlayImgEl.style.backgroundImage = `url("${imgUrl}")`;
         overlayImgEl.classList.add("show");
       }else{
@@ -589,57 +565,91 @@
     overlayEl.addEventListener("click", () => overlayEl.classList.remove("show"));
 
     // ===== Parsing / serialization =====
+    // Format: Question | imageURL | iconKey
     function serializeItems(list){
-      // One per line: text | img
-      return list.map(it => it.img ? `${it.text} | ${it.img}` : it.text).join("\n");
+      return list.map(it => {
+        const parts = [it.text];
+        if(it.img) parts.push(it.img);
+        if(it.iconKey) parts.push(it.iconKey);
+        return parts.join(" | ");
+      }).join("\n");
     }
 
     function parseItems(raw){
-      return raw
-        .split("\n")
-        .map(s => s.trim())
-        .filter(Boolean)
-        .map(line => {
-          const parts = line.split("|").map(p => p.trim()).filter(Boolean);
-          if(parts.length >= 2){
-            return { text: parts[0], img: parts.slice(1).join(" | ") };
-          }
-          return { text: line };
-        });
+      const out = raw.split("\n").map(s => s.trim()).filter(Boolean).map(line => {
+        const parts = line.split("|").map(p => p.trim()).filter(Boolean);
+        const text = parts[0] ?? "";
+        const img = parts[1] && parts[1].startsWith("http") ? parts[1] : undefined;
+        const iconKey = parts[2] ? parts[2].toLowerCase() : undefined;
+        return { text, img, iconKey };
+      }).filter(x => x.text.trim().length > 0);
+      return out;
     }
 
-    // ===== Wheel build =====
+    // ===== Wheel render (equal slices + icons only) =====
+    function buildConicGradient(n){
+      // equal slices; cycle colors
+      const step = 360 / n;
+      const stops = [];
+      for(let i=0;i<n;i++){
+        const c = WEDGE_COLORS[i % WEDGE_COLORS.length];
+        const a0 = i * step;
+        const a1 = (i+1) * step;
+        stops.push(`${c} ${a0}deg ${a1}deg`);
+      }
+      return `conic-gradient(from -90deg, ${stops.join(",")})`;
+    }
+
     function buildWheel(){
-      wheelEl.innerHTML = "";
       const n = Math.max(2, items.length);
+
+      wheelEl.style.background = buildConicGradient(n);
+
+      // Icons equally spaced around ring; no text.
+      iconsEl.innerHTML = "";
+      const radiusPct = 34; // distance from center (as % of wheel size)
       const slice = 360 / n;
 
       for(let i=0;i<n;i++){
-        const wedge = document.createElement("div");
-        wedge.className = "wedge";
-        wedge.style.transform = `rotate(${i*slice}deg)`;
-        wedge.style.background = WEDGE_COLORS[i % WEDGE_COLORS.length];
+        const it = items[i];
+        const key = (it.iconKey && ICONS[it.iconKey]) ? it.iconKey : defaultIconKeyForText(it.text);
+        const svgMarkup = ICONS[key] || ICONS.notice;
 
-        const label = document.createElement("span");
-        label.textContent = items[i]?.text ?? `Question ${i+1}`;
-        label.style.transform = `translateX(-50%) rotate(${-i*slice}deg)`;
+        const slot = document.createElement("div");
+        slot.className = "iconSlot";
+        slot.innerHTML = svgMarkup;
 
-        wedge.appendChild(label);
+        // Place at center, then rotate and translate outward.
+        // Angle points to center of each wedge.
+        const angle = (i * slice) + (slice/2) - 90; // align with conic starting angle
+        slot.style.transform = `rotate(${angle}deg) translate(${radiusPct}%, 0) rotate(${-angle}deg) translate(-50%, -50%)`;
+        // The last translate(-50%,-50%) would normally need positioning; we instead use left/top 50% with origin 0,0.
+        // We accomplish this by setting left/top 50% and transform-origin 0 0 and then translate(-50%,-50%) in transform:
+        slot.style.left = "50%";
+        slot.style.top = "50%";
+        slot.style.transformOrigin = "0 0";
 
-        const img = items[i]?.img;
-        const thumbsOn = showThumbsChk.checked;
-        if(img && thumbsOn){
-          wedge.classList.add("hasImage");
-          const thumb = document.createElement("div");
-          thumb.className = "thumb";
-          thumb.style.backgroundImage = `url("${img}")`;
-          // Rotate thumb back (so it doesn't spin relative to screen)
-          thumb.style.transform = `translateX(-50%) rotate(${-i*slice}deg)`;
-          wedge.appendChild(thumb);
-        }
-
-        wheelEl.appendChild(wedge);
+        iconsEl.appendChild(slot);
       }
+
+      // Keep icons rotating with wheel: icons are inside wheel; no extra work needed.
+    }
+
+    function defaultIconKeyForText(text){
+      const t = (text || "").toLowerCase();
+      if(t.includes("small")) return "small";
+      if(t.includes("heavy")) return "heavy";
+      if(t.includes("light")) return "light";
+      if(t.includes("sit")) return "sit";
+      if(t.includes("surface")) return "surface";
+      if(t.includes("change") || t.includes("again")) return "change";
+      if(t.includes("risk")) return "risk";
+      if(t.includes("intent")) return "intent";
+      if(t.includes("unresolved")) return "unresolved";
+      if(t.includes("quiet")) return "quiet";
+      if(t.includes("notice") || t.includes("viewer")) return "notice";
+      if(t.includes("strong")) return "focus";
+      return "notice";
     }
 
     // ===== Deterministic selection =====
@@ -650,26 +660,21 @@
       }
       return arr;
     }
-
     function refillBag(){
       bag = shuffle([...Array(items.length).keys()]);
     }
-
     function pickIndex(){
       if(!noRepeatsChk.checked){
         return Math.floor(Math.random() * items.length);
       }
-      if(bag.length === 0){
-        refillBag();
-      }
+      if(bag.length === 0) refillBag();
       return bag.pop();
     }
 
-    // ===== Spin mechanics =====
+    // ===== Spin =====
     function randInt(min, max){
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-
     function animatePull(){
       stringEl.animate(
         [{ transform: "scaleX(1)" }, { transform: "scaleX(1.28)" }, { transform: "scaleX(1)" }],
@@ -692,11 +697,12 @@
 
       const targetIndex = pickIndex();
 
-      // Full spins
-      const extraSpins = randInt(4, 7) * 360;
+      // Minimum full rotations guaranteed
+      const extraSpins = randInt(MIN_FULL_ROTATIONS, MIN_FULL_ROTATIONS + 3) * 360;
 
+      // Align center of wedge to pointer (top)
       const targetCenter = targetIndex * slice + slice / 2;
-      const jitter = (Math.random() * (slice * 0.18)) - (slice * 0.09);
+      const jitter = (Math.random() * (slice * 0.10)) - (slice * 0.05); // small jitter, still lands same wedge
       const targetRotation = extraSpins + (360 - (targetCenter % 360)) + jitter;
 
       const endRotation = currentRotation + targetRotation;
@@ -724,7 +730,6 @@
       lockBtn.textContent = locked ? "Unlock editor" : "Lock editor";
       try{ localStorage.setItem(LS.locked, locked ? "1" : "0"); }catch(e){}
     }
-
     lockBtn.addEventListener("click", () => {
       const locked = panelEl.classList.contains("locked");
       setLocked(!locked);
@@ -753,7 +758,6 @@
         return;
       }
       items = next;
-      // Reset deterministic bag to match new list
       bag = [];
       buildWheel();
       try{ localStorage.setItem(LS.items, JSON.stringify(items)); }catch(e){}
@@ -773,36 +777,36 @@
       try{ localStorage.setItem(LS.noRepeats, noRepeatsChk.checked ? "1" : "0"); }catch(e){}
     });
 
-    showThumbsChk.addEventListener("change", () => {
-      try{ localStorage.setItem(LS.showThumbs, showThumbsChk.checked ? "1" : "0"); }catch(e){}
-      buildWheel();
+    showOverlayImgChk.addEventListener("change", () => {
+      try{ localStorage.setItem(LS.showOverlayImg, showOverlayImgChk.checked ? "1" : "0"); }catch(e){}
     });
 
     // ===== Init =====
     (function init(){
-      // restore prefs
       try{
         const locked = localStorage.getItem(LS.locked) === "1";
         const nr = localStorage.getItem(LS.noRepeats) === "1";
-        const st = localStorage.getItem(LS.showThumbs);
+        const soi = localStorage.getItem(LS.showOverlayImg);
         const saved = localStorage.getItem(LS.items);
 
-        if(st === "0") showThumbsChk.checked = false;
-        if(st === "1") showThumbsChk.checked = true;
-
         noRepeatsChk.checked = nr;
+        showOverlayImgChk.checked = (soi !== "0"); // default true
 
         if(saved){
           const parsed = JSON.parse(saved);
           if(Array.isArray(parsed) && parsed.length >= 2){
-            items = parsed.map(x => ({ text: String(x.text ?? ""), img: x.img ? String(x.img) : undefined }))
-                          .filter(x => x.text.trim().length > 0);
+            items = parsed.map(x => ({
+              text: String(x.text ?? "").trim(),
+              img: x.img ? String(x.img) : undefined,
+              iconKey: x.iconKey ? String(x.iconKey) : undefined
+            })).filter(x => x.text.length > 0);
           }
         }
 
         questionsTA.value = serializeItems(items.length ? items : DEFAULT_ITEMS);
         setLocked(locked);
       }catch(e){
+        items = [...DEFAULT_ITEMS];
         questionsTA.value = serializeItems(DEFAULT_ITEMS);
         setLocked(false);
       }
