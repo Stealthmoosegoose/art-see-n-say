@@ -701,4 +701,118 @@
 
       const endRotation = currentRotation + targetRotation;
 
-      wheelEl.style.transitio
+      wheelEl.style.transition = "transform 3.2s cubic-bezier(0.12, 0.78, 0.08, 1)";
+      wheelEl.style.transform = `rotate(${endRotation}deg)`;
+
+      const onDone = () => {
+        currentRotation = endRotation % 360;
+
+        const chosen = items[targetIndex];
+        showOverlay(chosen.text, chosen.img);
+        speak(chosen.text);
+
+        isSpinning = false;
+        spinBtn.disabled = false;
+        applyBtn.disabled = false;
+      };
+      wheelEl.addEventListener("transitionend", onDone, { once: true });
+    }
+
+    // ===== Locking =====
+    function setLocked(locked){
+      panelEl.classList.toggle("locked", locked);
+      lockBtn.textContent = locked ? "Unlock editor" : "Lock editor";
+      try{ localStorage.setItem(LS.locked, locked ? "1" : "0"); }catch(e){}
+    }
+
+    lockBtn.addEventListener("click", () => {
+      const locked = panelEl.classList.contains("locked");
+      setLocked(!locked);
+    });
+
+    // Long-press center to unlock when locked
+    let pressTimer = null;
+    function startPress(){
+      if(!panelEl.classList.contains("locked")) return;
+      pressTimer = setTimeout(() => setLocked(false), 800);
+    }
+    function endPress(){
+      if(pressTimer) clearTimeout(pressTimer);
+      pressTimer = null;
+    }
+    centerEl.addEventListener("pointerdown", startPress);
+    centerEl.addEventListener("pointerup", endPress);
+    centerEl.addEventListener("pointercancel", endPress);
+    centerEl.addEventListener("pointerleave", endPress);
+
+    // ===== UI wiring =====
+    applyBtn.addEventListener("click", () => {
+      const next = parseItems(questionsTA.value);
+      if(next.length < 2){
+        alert("Add at least 2 questions (one per line).");
+        return;
+      }
+      items = next;
+      // Reset deterministic bag to match new list
+      bag = [];
+      buildWheel();
+      try{ localStorage.setItem(LS.items, JSON.stringify(items)); }catch(e){}
+    });
+
+    spinBtn.addEventListener("click", spin);
+    handleEl.addEventListener("click", spin);
+
+    testVoiceBtn.addEventListener("click", () => {
+      speak("Voice enabled. Ready to critique.");
+      showOverlay("Voice enabled. Ready to critique.", null);
+      setTimeout(() => overlayEl.classList.remove("show"), 900);
+    });
+
+    noRepeatsChk.addEventListener("change", () => {
+      bag = [];
+      try{ localStorage.setItem(LS.noRepeats, noRepeatsChk.checked ? "1" : "0"); }catch(e){}
+    });
+
+    showThumbsChk.addEventListener("change", () => {
+      try{ localStorage.setItem(LS.showThumbs, showThumbsChk.checked ? "1" : "0"); }catch(e){}
+      buildWheel();
+    });
+
+    // ===== Init =====
+    (function init(){
+      // restore prefs
+      try{
+        const locked = localStorage.getItem(LS.locked) === "1";
+        const nr = localStorage.getItem(LS.noRepeats) === "1";
+        const st = localStorage.getItem(LS.showThumbs);
+        const saved = localStorage.getItem(LS.items);
+
+        if(st === "0") showThumbsChk.checked = false;
+        if(st === "1") showThumbsChk.checked = true;
+
+        noRepeatsChk.checked = nr;
+
+        if(saved){
+          const parsed = JSON.parse(saved);
+          if(Array.isArray(parsed) && parsed.length >= 2){
+            items = parsed.map(x => ({ text: String(x.text ?? ""), img: x.img ? String(x.img) : undefined }))
+                          .filter(x => x.text.trim().length > 0);
+          }
+        }
+
+        questionsTA.value = serializeItems(items.length ? items : DEFAULT_ITEMS);
+        setLocked(locked);
+      }catch(e){
+        questionsTA.value = serializeItems(DEFAULT_ITEMS);
+        setLocked(false);
+      }
+
+      buildWheel();
+
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.onvoiceschanged = () => {};
+      }
+    })();
+  </script>
+</body>
+</html>
