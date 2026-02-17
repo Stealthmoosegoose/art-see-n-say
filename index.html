@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Critique See 'N Say</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#0f1733;
+      --ring:#ffd35c;
+      --blue:#1a7bd6;
+      --red:#e94b3c;
+      --text:#eaf0ff;
+      --muted:#9fb2d6;
+      --shadow: 0 20px 60px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 900px at 20% 10%, #1b2a66 0%, var(--bg) 55%, #050713 100%);
+      color:var(--text);
+      min-height:100svh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+    .app{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:24px;
+      align-items:center;
+    }
+    @media (max-width: 860px){
+      .app{grid-template-columns:1fr; gap:16px;}
+    }
+
+    .stage{
+      position:relative;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    /* Wheel wrapper */
+    .toy{
+      position:relative;
+      width:min(520px, 100%);
+      aspect-ratio: 1 / 1;
+      margin:0 auto;
+      display:grid;
+      place-items:center;
+    }
+
+    /* Pointer (top indicator) */
+    .pointer{
+      position:absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 22px solid rgba(255,255,255,.92);
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,.35));
+      z-index:5;
+    }
+
+    /* Outer ring */
+    .ring{
+      position:absolute;
+      inset: 6%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 40%, #ffe08b 0%, var(--ring) 55%, #f0b72f 100%);
+      box-shadow: inset 0 0 0 10px rgba(0,0,0,.08),
+                  inset 0 0 30px rgba(0,0,0,.15);
+    }
+
+    /* Spinning wheel (wedges) */
+    .wheel{
+      position:absolute;
+      inset: 10%;
+      border-radius: 50%;
+      overflow:hidden;
+      transform: rotate(0deg);
+      will-change: transform;
+      box-shadow: inset 0 0 0 8px rgba(0,0,0,.10);
+    }
+    .wedge{
+      position:absolute;
+      inset:0;
+      clip-path: polygon(50% 50%, 0% 0%, 100% 0%);
+      transform-origin: 50% 50%;
+      background: #23315f;
+      display:block;
+    }
+    /* Wedge label */
+    .wedge span{
+      position:absolute;
+      left:50%;
+      top: 12%;
+      transform: translateX(-50%) rotate(0deg);
+      width: 72%;
+      text-align:center;
+      font-size: 14px;
+      font-weight: 650;
+      color: rgba(0,0,0,.78);
+      text-shadow: 0 1px 0 rgba(255,255,255,.35);
+      user-select:none;
+      pointer-events:none;
+    }
+    @media (max-width: 520px){
+      .wedge span{font-size:12px;}
+    }
+
+    /* Center disc */
+    .center{
+      position:absolute;
+      inset: 33%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #ff7a6e 0%, var(--red) 55%, #c73327 100%);
+      box-shadow: inset 0 0 0 10px rgba(0,0,0,.10),
+                  0 16px 28px rgba(0,0,0,.35);
+      display:grid;
+      place-items:center;
+      z-index:4;
+    }
+    .center .badge{
+      width: 74%;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #2fa0ff 0%, var(--blue) 60%, #0f58a6 100%);
+      box-shadow: inset 0 0 0 8px rgba(0,0,0,.12);
+      display:grid;
+      place-items:center;
+      padding:12px;
+      text-align:center;
+    }
+    .center .badge strong{
+      display:block;
+      font-size: 14px;
+      letter-spacing:.6px;
+      text-transform: uppercase;
+    }
+    .center .badge small{
+      display:block;
+      margin-top:6px;
+      color: rgba(255,255,255,.85);
+      font-weight: 600;
+    }
+
+    /* Pull string */
+    .stringWrap{
+      position:absolute;
+      right: -8px;
+      bottom: 14%;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      z-index:6;
+    }
+    .string{
+      width: 140px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,255,255,.2), rgba(255,255,255,.75), rgba(255,255,255,.2));
+      box-shadow: 0 10px 18px rgba(0,0,0,.25);
+      transform-origin: left center;
+    }
+    .handle{
+      width: 44px; height: 36px;
+      border-radius: 10px;
+      background: #ff5b5b;
+      box-shadow: 0 12px 20px rgba(0,0,0,.25), inset 0 -4px 0 rgba(0,0,0,.12);
+      border: 1px solid rgba(255,255,255,.25);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      user-select:none;
+      touch-action: manipulation;
+    }
+    .handle:active{ transform: translateY(1px); }
+    .handle svg{opacity:.92}
+
+    /* Right panel */
+    .panel{
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .panel h1{
+      font-size: 18px;
+      margin: 0 0 10px;
+      letter-spacing:.2px;
+    }
+    .panel p{
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 14px;
+    }
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    button{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight: 650;
+      letter-spacing:.2px;
+    }
+    button:hover{ background: rgba(255,255,255,.10); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+
+    textarea{
+      width:100%;
+      min-height: 190px;
+      resize: vertical;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.20);
+      color: var(--text);
+      padding: 12px;
+      font-size: 13px;
+      line-height:1.35;
+      outline:none;
+    }
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color: rgba(255,255,255,.65);
+    }
+
+    /* Overlay */
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      background: rgba(0,0,0,.55);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease;
+      padding: 24px;
+      z-index:50;
+    }
+    .overlay.show{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .overlayCard{
+      width:min(820px, 100%);
+      background: rgba(15, 23, 51, .92);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 22px;
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+    }
+    .overlayCard .q{
+      font-size: clamp(22px, 4vw, 38px);
+      font-weight: 800;
+      line-height:1.12;
+      margin: 0 0 10px;
+    }
+    .overlayCard .sub{
+      margin:0;
+      color: rgba(255,255,255,.70);
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="stage">
+      <div class="toy" aria-label="See 'N Say critique wheel">
+        <div class="pointer" aria-hidden="true"></div>
+        <div class="ring" aria-hidden="true"></div>
+
+        <div id="wheel" class="wheel" role="img" aria-label="Spinning question wheel"></div>
+
+        <div class="center" aria-hidden="true">
+          <div class="badge">
+            <div>
+              <strong>Critique</strong>
+              <small>Pull to ask</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="stringWrap">
+          <div id="string" class="string" aria-hidden="true"></div>
+          <div id="handle" class="handle" title="Pull" role="button" aria-label="Pull the string">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 5v14m0 0l-5-5m5 5l5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="panel">
+      <h1>Critique See ’N Say</h1>
+      <p>Tap the pull handle to spin. The wheel lands on a question, shows it big, and speaks it out loud.</p>
+
+      <label for="questions" style="font-weight:700; font-size:13px;">Questions (one per line)</label>
+      <textarea id="questions"></textarea>
+
+      <div class="controls">
+        <button id="apply">Apply questions</button>
+        <button id="spin">Spin</button>
+        <button id="testVoice">Enable / Test voice</button>
+      </div>
+
+      <div class="hint">
+        Mobile note: browsers often require a tap before audio/speech will work. Use “Enable / Test voice” once.
+      </div>
+    </aside>
+  </div>
+
+  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Selected question">
+    <div class="overlayCard">
+      <p class="q" id="overlayText">…</p>
+      <p class="sub">Tap anywhere to dismiss.</p>
+    </div>
+  </div>
+
+  <script>
+    // Default questions (edit freely)
+    const DEFAULT_QUESTIONS = [
+      "Why is it so small?",
+      "Why is it so heavy?",
+      "Why is it so light?",
+      "Why does it sit like that?",
+      "What decision feels most intentional here?",
+      "What feels unresolved?",
+      "Where does the surface help (or fight) the form?",
+      "What would you change if you made it again?",
+      "What’s the strongest part of this piece?",
+      "What’s the quietest part of this piece?",
+      "What’s the piece asking the viewer to notice?",
+      "What’s one risk you could push further?"
+    ];
+
+    // Colors for wedges (repeat as needed)
+    const WEDGE_COLORS = [
+      "#ffd35c", "#bfe6ff", "#c7f2c4", "#ffd0e0",
+      "#ffe6a6", "#cdd7ff", "#d2f7ff", "#ffd9b5"
+    ];
+
+    const wheelEl = document.getElementById("wheel");
+    const handleEl = document.getElementById("handle");
+    const stringEl = document.getElementById("string");
+
+    const overlayEl = document.getElementById("overlay");
+    const overlayTextEl = document.getElementById("overlayText");
+
+    const questionsTA = document.getElementById("questions");
+    const applyBtn = document.getElementById("apply");
+    const spinBtn = document.getElementById("spin");
+    const testVoiceBtn = document.getElementById("testVoice");
+
+    let questions = [...DEFAULT_QUESTIONS];
+    let isSpinning = false;
+    let currentRotation = 0; // degrees
+
+    // --- Speech ---
+    function speak(text){
+      try{
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 1.0;
+        utter.pitch = 1.0;
+        utter.volume = 1.0;
+        // Optional: choose a default English voice if available
+        const voices = window.speechSynthesis.getVoices?.() || [];
+        const en = voices.find(v => /en/i.test(v.lang));
+        if(en) utter.voice = en;
+        window.speechSynthesis.speak(utter);
+      }catch(e){
+        // Ignore; overlay still shows text
+      }
+    }
+
+    function showOverlay(text){
+      overlayTextEl.textContent = text;
+      overlayEl.classList.add("show");
+    }
+    overlayEl.addEventListener("click", () => overlayEl.classList.remove("show"));
+
+    // --- Build wheel wedges ---
+    function buildWheel(){
+      wheelEl.innerHTML = "";
+      const n = Math.max(2, questions.length);
+      const slice = 360 / n;
+
+      for(let i=0;i<n;i++){
+        const wedge = document.createElement("div");
+        wedge.className = "wedge";
+
+        // Each wedge is a triangle clipped at top; rotate around center
+        wedge.style.transform = `rotate(${i*slice}deg)`;
+        wedge.style.background = WEDGE_COLORS[i % WEDGE_COLORS.length];
+
+        const label = document.createElement("span");
+        const text = questions[i] ?? `Question ${i+1}`;
+        label.textContent = text;
+
+        // Rotate label back so it reads upright-ish relative to screen
+        // and push it outward slightly.
+        label.style.transform = `translateX(-50%) rotate(${-i*slice}deg)`;
+
+        wedge.appendChild(label);
+        wheelEl.appendChild(wedge);
+      }
+    }
+
+    // --- Spin logic ---
+    function randInt(min, max){
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function animatePull(){
+      // quick string "tug"
+      stringEl.animate([
+        { transform: "scaleX(1)" },
+        { transform: "scaleX(1.25)" },
+        { transform: "scaleX(1)" }
+      ], { duration: 220, easing: "ease-out" });
+    }
+
+    function spin(){
+      if(isSpinning) return;
+      isSpinning = true;
+      spinBtn.disabled = true;
+      applyBtn.disabled = true;
+
+      animatePull();
+
+      const n = questions.length;
+      const slice = 360 / n;
+
+      // Pick a target index, then compute rotation so that index lands at pointer (top).
+      // Pointer is at 0deg. We want the CENTER of the wedge to align with 0deg.
+      const targetIndex = randInt(0, n - 1);
+
+      // Extra full spins for drama
+      const extraSpins = randInt(4, 7) * 360;
+
+      // Where is the center of the target wedge in degrees?
+      // Wedge i starts at i*slice; its center is i*slice + slice/2.
+      // To bring that center to 0deg under the pointer, rotate wheel so that:
+      // (center + rotation) % 360 == 0  => rotation == -center (mod 360)
+      const targetCenter = targetIndex * slice + slice / 2;
+
+      // Add a small random jitter within wedge to feel less robotic (still lands same wedge)
+      const jitter = (Math.random() * (slice * 0.18)) - (slice * 0.09);
+
+      const targetRotation = extraSpins + (360 - (targetCenter % 360)) + jitter;
+
+      const startRotation = currentRotation;
+      const endRotation = currentRotation + targetRotation;
+
+      // Animate with CSS transition for ease-out
+      wheelEl.style.transition = "transform 3.2s cubic-bezier(0.12, 0.78, 0.08, 1)";
+      wheelEl.style.transform = `rotate(${endRotation}deg)`;
+
+      // When animation ends, lock state, announce result
+      const onDone = () => {
+        wheelEl.removeEventListener("transitionend", onDone);
+        currentRotation = endRotation % 360;
+
+        const chosen = questions[targetIndex];
+        showOverlay(chosen);
+        speak(chosen);
+
+        isSpinning = false;
+        spinBtn.disabled = false;
+        applyBtn.disabled = false;
+      };
+      wheelEl.addEventListener("transitionend", onDone, { once: true });
+    }
+
+    // --- UI wiring ---
+    function normalizeQuestions(raw){
+      return raw
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
+    applyBtn.addEventListener("click", () => {
+      const q = normalizeQuestions(questionsTA.value);
+      if(q.length >= 2){
+        questions = q;
+        buildWheel();
+      }else{
+        alert("Add at least 2 questions (one per line).");
+      }
+    });
+
+    spinBtn.addEventListener("click", spin);
+    handleEl.addEventListener("click", spin);
+
+    testVoiceBtn.addEventListener("click", () => {
+      // Some browsers only populate voices after a speak attempt.
+      speak("Voice enabled. Ready to critique.");
+      showOverlay("Voice enabled. Ready to critique.");
+      setTimeout(() => overlayEl.classList.remove("show"), 900);
+    });
+
+    // Initialize
+    questionsTA.value = DEFAULT_QUESTIONS.join("\n");
+    buildWheel();
+
+    // Ensure voices load in some browsers
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
