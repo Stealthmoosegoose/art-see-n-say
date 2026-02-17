@@ -35,9 +35,9 @@
     }
 
     .app{
-      width:min(1020px, 100%);
+      width:min(1060px, 100%);
       display:grid;
-      grid-template-columns: 1.2fr .8fr;
+      grid-template-columns: 1.25fr .75fr;
       gap:24px;
       align-items:start;
     }
@@ -55,61 +55,94 @@
       overflow:hidden;
     }
 
-    /* Toy silhouette */
+    /* ===== Toy silhouette: handle connected to base ===== */
     .toyFrame{
       position:relative;
-      width:min(560px, 100%);
+      width:min(600px, 100%);
       margin:0 auto;
       padding-top: 10px;
       padding-bottom: 24px;
     }
-    .toyHandle{
-      width: 64%;
-      height: 80px;
-      margin: 0 auto 10px;
-      border-radius: 20px 20px 26px 26px;
-      background: radial-gradient(120px 70px at 50% 30%, rgba(255,255,255,.55), rgba(255,255,255,0) 60%),
-                  linear-gradient(180deg, var(--toyYellow) 0%, var(--toyYellow2) 100%);
-      box-shadow: inset 0 -8px 0 rgba(0,0,0,.10), var(--shadow2);
-      border: 1px solid rgba(0,0,0,.08);
-      position:relative;
+
+    /* The whole connected "housing" layer */
+    .housing{
+      position:absolute;
+      inset: 0;
+      pointer-events:none;
+      z-index:0;
     }
-    .toyHandle:before{
+
+    /* Top handle bar */
+    .toyHandleBar{
+      position:absolute;
+      left: 18%;
+      right: 18%;
+      top: 8px;
+      height: 84px;
+      border-radius: 26px 26px 34px 34px;
+      background:
+        radial-gradient(140px 80px at 50% 30%, rgba(255,255,255,.55), rgba(255,255,255,0) 60%),
+        linear-gradient(180deg, var(--toyYellow) 0%, var(--toyYellow2) 100%);
+      box-shadow: inset 0 -10px 0 rgba(0,0,0,.10), var(--shadow2);
+      border: 1px solid rgba(0,0,0,.08);
+    }
+    .toyHandleBar:before{
       content:"";
       position:absolute;
-      left: 14%;
-      right: 14%;
-      top: 16px;
-      bottom: 14px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.85);
+      left: 16%;
+      right: 16%;
+      top: 18px;
+      bottom: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.86);
       box-shadow: inset 0 0 0 10px rgba(0,0,0,.06);
     }
 
+    /* Two connected legs (like the real toy) */
+    .leg{
+      position:absolute;
+      top: 78px;
+      width: 120px;
+      height: 420px;
+      border-radius: 40px;
+      background: linear-gradient(180deg, var(--toyYellow) 0%, var(--toyYellow2) 100%);
+      box-shadow: inset 0 -12px 0 rgba(0,0,0,.10), var(--shadow2);
+      border: 1px solid rgba(0,0,0,.08);
+      opacity: 0.98;
+    }
+    .leg.left{ left: 10%; }
+    .leg.right{ right: 10%; }
+
+    /* Base platform */
+    .toyBase{
+      position:absolute;
+      left: 10%;
+      right: 10%;
+      bottom: 6px;
+      height: 92px;
+      border-radius: 30px;
+      background: linear-gradient(180deg, var(--toyYellow) 0%, var(--toyYellow2) 100%);
+      box-shadow: inset 0 -12px 0 rgba(0,0,0,.10), var(--shadow2);
+      border: 1px solid rgba(0,0,0,.08);
+    }
+
+    /* Wheel area container (sits above housing) */
     .toy{
       position:relative;
       width:100%;
       aspect-ratio: 1 / 1;
       display:grid;
       place-items:center;
-    }
-    .toyStand{
-      position:absolute;
-      left: 12%;
-      right: 12%;
-      bottom: -6px;
-      height: 78px;
-      border-radius: 26px;
-      background: linear-gradient(180deg, var(--toyYellow) 0%, var(--toyYellow2) 100%);
-      box-shadow: inset 0 -10px 0 rgba(0,0,0,.10), var(--shadow2);
-      border: 1px solid rgba(0,0,0,.08);
-      z-index:0;
+      z-index:1;
+      /* push wheel down a bit so handle feels attached */
+      margin-top: 88px;
+      margin-bottom: 34px;
     }
 
     /* Pointer */
     .pointer{
       position:absolute;
-      top: 40px;
+      top: 18px;
       left: 50%;
       transform: translateX(-50%);
       width: 0; height: 0;
@@ -135,7 +168,7 @@
       z-index:1;
     }
 
-    /* Wheel uses conic-gradient so slices are guaranteed equal */
+    /* Wheel: equal slices via conic-gradient */
     .wheel{
       position:absolute;
       inset: 12%;
@@ -156,32 +189,27 @@
       pointer-events:none;
     }
 
-    /* Icons layer (absolute, rotates with wheel) */
+    /* Icons layer (inside wheel, rotates with it) */
     .icons{
       position:absolute;
       inset:0;
-      transform: rotate(0deg);
-      transform-origin: 50% 50%;
       pointer-events:none;
     }
     .iconSlot{
       position:absolute;
-      left:50%;
-      top:50%;
       width: 68px;
       height: 68px;
-      transform-origin: 0 0;
+      border-radius: 999px;
       display:grid;
       place-items:center;
-      border-radius: 50%;
-      background: rgba(255,255,255,.78);
+      background: rgba(255,255,255,.82);
       box-shadow: 0 12px 18px rgba(0,0,0,.22);
       border: 6px solid rgba(255,255,255,.78);
     }
     .iconSlot svg{
       width: 38px;
       height: 38px;
-      opacity: .9;
+      opacity: .92;
     }
     @media (max-width:520px){
       .iconSlot{ width:56px; height:56px; }
@@ -370,10 +398,17 @@
   <div class="app">
     <div class="stage">
       <div class="toyFrame">
-        <div class="toyHandle" aria-hidden="true"></div>
 
+        <!-- Connected handle + legs + base -->
+        <div class="housing" aria-hidden="true">
+          <div class="toyHandleBar"></div>
+          <div class="leg left"></div>
+          <div class="leg right"></div>
+          <div class="toyBase"></div>
+        </div>
+
+        <!-- Wheel -->
         <div class="toy" aria-label="Critique wheel">
-          <div class="toyStand" aria-hidden="true"></div>
           <div class="pointer" aria-hidden="true"></div>
           <div class="ring" aria-hidden="true"></div>
 
@@ -399,6 +434,7 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -431,7 +467,7 @@
 
       <div id="formatHint" class="hint">
         Optional format: <b>Question | imageURL | iconKey</b><br/>
-        iconKey options: <i>small, heavy, light, sit, surface, change, risk, focus, quiet, intent, unresolved, notice</i><br/>
+        iconKey: <i>small, heavy, light, sit, surface, change, risk, focus, quiet, intent, unresolved, notice</i><br/>
         Example: <i>Why is it so heavy? | https://example.com/heavy.jpg | heavy</i>
       </div>
 
@@ -456,11 +492,10 @@
 
   <script>
     // ===== CONFIG =====
-    // Minimum full rotations before stopping (set to 1 if you truly want only one).
-    const MIN_FULL_ROTATIONS = 3;
+    // Minimum full rotations before stopping
+    const MIN_FULL_ROTATIONS = 1;
 
     // ===== Icon library (inline SVG) =====
-    // Pottery-ish set, plus a few abstract critique concepts.
     const ICONS = {
       small: svg(`<circle cx="12" cy="12" r="7"/><path d="M5 12h14" stroke-width="2" fill="none"/>`),
       heavy: svg(`<path d="M7 10h10l-1 9H8l-1-9Z"/><path d="M9 10V7a3 3 0 0 1 6 0v3" fill="none" stroke-width="2"/>`),
@@ -480,8 +515,7 @@
       return `<svg viewBox="0 0 24 24" fill="rgba(0,0,0,.75)" xmlns="http://www.w3.org/2000/svg" stroke="rgba(0,0,0,.75)">${inner}</svg>`;
     }
 
-    // ===== Data model =====
-    // Each entry: { text, img?, iconKey? }
+    // ===== Defaults =====
     const DEFAULT_ITEMS = [
       { text: "Why is it so small?", iconKey: "small" },
       { text: "Why is it so heavy?", iconKey: "heavy" },
@@ -534,8 +568,49 @@
       locked: "sns_locked",
       noRepeats: "sns_norepeats",
       showOverlayImg: "sns_showOverlayImg",
-      items: "sns_items_v2"
+      items: "sns_items_v3"
     };
+
+    // ===== Audio (ratchet + thunk) =====
+    let audioCtx = null;
+
+    function ensureAudio(){
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if(audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    function clickTick(timeOffset = 0){
+      if(!audioCtx) return;
+      const t = audioCtx.currentTime + timeOffset;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = "square";
+      o.frequency.setValueAtTime(900, t);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.08, t + 0.001);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(t);
+      o.stop(t + 0.035);
+    }
+
+    function thunk(timeOffset = 0){
+      if(!audioCtx) return;
+      const t = audioCtx.currentTime + timeOffset;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = "sine";
+      o.frequency.setValueAtTime(160, t);
+      o.frequency.exponentialRampToValueAtTime(60, t + 0.08);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.22, t + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.10);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(t);
+      o.stop(t + 0.11);
+    }
 
     // ===== Speech =====
     function speak(text){
@@ -564,7 +639,7 @@
     }
     overlayEl.addEventListener("click", () => overlayEl.classList.remove("show"));
 
-    // ===== Parsing / serialization =====
+    // ===== Editor parsing / serialization =====
     // Format: Question | imageURL | iconKey
     function serializeItems(list){
       return list.map(it => {
@@ -586,55 +661,6 @@
       return out;
     }
 
-    // ===== Wheel render (equal slices + icons only) =====
-    function buildConicGradient(n){
-      // equal slices; cycle colors
-      const step = 360 / n;
-      const stops = [];
-      for(let i=0;i<n;i++){
-        const c = WEDGE_COLORS[i % WEDGE_COLORS.length];
-        const a0 = i * step;
-        const a1 = (i+1) * step;
-        stops.push(`${c} ${a0}deg ${a1}deg`);
-      }
-      return `conic-gradient(from -90deg, ${stops.join(",")})`;
-    }
-
-    function buildWheel(){
-      const n = Math.max(2, items.length);
-
-      wheelEl.style.background = buildConicGradient(n);
-
-      // Icons equally spaced around ring; no text.
-      iconsEl.innerHTML = "";
-      const radiusPct = 34; // distance from center (as % of wheel size)
-      const slice = 360 / n;
-
-      for(let i=0;i<n;i++){
-        const it = items[i];
-        const key = (it.iconKey && ICONS[it.iconKey]) ? it.iconKey : defaultIconKeyForText(it.text);
-        const svgMarkup = ICONS[key] || ICONS.notice;
-
-        const slot = document.createElement("div");
-        slot.className = "iconSlot";
-        slot.innerHTML = svgMarkup;
-
-        // Place at center, then rotate and translate outward.
-        // Angle points to center of each wedge.
-        const angle = (i * slice) + (slice/2) - 90; // align with conic starting angle
-        slot.style.transform = `rotate(${angle}deg) translate(${radiusPct}%, 0) rotate(${-angle}deg) translate(-50%, -50%)`;
-        // The last translate(-50%,-50%) would normally need positioning; we instead use left/top 50% with origin 0,0.
-        // We accomplish this by setting left/top 50% and transform-origin 0 0 and then translate(-50%,-50%) in transform:
-        slot.style.left = "50%";
-        slot.style.top = "50%";
-        slot.style.transformOrigin = "0 0";
-
-        iconsEl.appendChild(slot);
-      }
-
-      // Keep icons rotating with wheel: icons are inside wheel; no extra work needed.
-    }
-
     function defaultIconKeyForText(text){
       const t = (text || "").toLowerCase();
       if(t.includes("small")) return "small";
@@ -651,6 +677,58 @@
       if(t.includes("strong")) return "focus";
       return "notice";
     }
+
+    // ===== Wheel render =====
+    function buildConicGradient(n){
+      const step = 360 / n;
+      const stops = [];
+      for(let i=0;i<n;i++){
+        const c = WEDGE_COLORS[i % WEDGE_COLORS.length];
+        const a0 = i * step;
+        const a1 = (i+1) * step;
+        stops.push(`${c} ${a0}deg ${a1}deg`);
+      }
+      return `conic-gradient(from -90deg, ${stops.join(",")})`;
+    }
+
+    function buildWheel(){
+      const n = Math.max(2, items.length);
+
+      wheelEl.style.background = buildConicGradient(n);
+
+      iconsEl.innerHTML = "";
+      const slice = 360 / n;
+
+      // stable pixel radius so icons don't disappear
+      const wheelRect = wheelEl.getBoundingClientRect();
+      const radiusPx = Math.min(wheelRect.width, wheelRect.height) * 0.34;
+
+      for(let i=0;i<n;i++){
+        const it = items[i];
+        const key = (it.iconKey && ICONS[it.iconKey]) ? it.iconKey : defaultIconKeyForText(it.text);
+        const svgMarkup = ICONS[key] || ICONS.notice;
+
+        const slot = document.createElement("div");
+        slot.className = "iconSlot";
+        slot.innerHTML = svgMarkup;
+
+        const angle = (i * slice) + (slice / 2); // wedge center
+
+        slot.style.left = "50%";
+        slot.style.top = "50%";
+        slot.style.transform =
+          `translate(-50%, -50%) rotate(${angle}deg) translate(0, ${-radiusPx}px) rotate(${-angle}deg)`;
+
+        iconsEl.appendChild(slot);
+      }
+    }
+
+    // rebuild on resize so radius stays correct
+    let resizeTimer = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(buildWheel, 120);
+    });
 
     // ===== Deterministic selection =====
     function shuffle(arr){
@@ -686,6 +764,8 @@
       if(isSpinning) return;
       if(items.length < 2) return;
 
+      ensureAudio();
+
       isSpinning = true;
       spinBtn.disabled = true;
       applyBtn.disabled = true;
@@ -697,21 +777,32 @@
 
       const targetIndex = pickIndex();
 
-      // Minimum full rotations guaranteed
+      // Guarantee minimum full rotations
       const extraSpins = randInt(MIN_FULL_ROTATIONS, MIN_FULL_ROTATIONS + 3) * 360;
 
-      // Align center of wedge to pointer (top)
+      // Align wedge center to pointer
       const targetCenter = targetIndex * slice + slice / 2;
-      const jitter = (Math.random() * (slice * 0.10)) - (slice * 0.05); // small jitter, still lands same wedge
+      const jitter = (Math.random() * (slice * 0.10)) - (slice * 0.05);
       const targetRotation = extraSpins + (360 - (targetCenter % 360)) + jitter;
 
       const endRotation = currentRotation + targetRotation;
+
+      // Ratchet ticks over the duration (ease-out feel)
+      const totalMs = 3200; // matches CSS transition duration below
+      const ticks = 22;
+      for(let k=0;k<ticks;k++){
+        const frac = k / ticks;
+        const eased = 1 - Math.pow(1 - frac, 2.2);
+        clickTick((eased * totalMs) / 1000);
+      }
 
       wheelEl.style.transition = "transform 3.2s cubic-bezier(0.12, 0.78, 0.08, 1)";
       wheelEl.style.transform = `rotate(${endRotation}deg)`;
 
       const onDone = () => {
         currentRotation = endRotation % 360;
+
+        thunk(0);
 
         const chosen = items[targetIndex];
         showOverlay(chosen.text, chosen.img);
@@ -767,6 +858,7 @@
     handleEl.addEventListener("click", spin);
 
     testVoiceBtn.addEventListener("click", () => {
+      ensureAudio();
       speak("Voice enabled. Ready to critique.");
       showOverlay("Voice enabled. Ready to critique.", null);
       setTimeout(() => overlayEl.classList.remove("show"), 900);
@@ -790,7 +882,7 @@
         const saved = localStorage.getItem(LS.items);
 
         noRepeatsChk.checked = nr;
-        showOverlayImgChk.checked = (soi !== "0"); // default true
+        showOverlayImgChk.checked = (soi !== "0");
 
         if(saved){
           const parsed = JSON.parse(saved);
@@ -811,7 +903,8 @@
         setLocked(false);
       }
 
-      buildWheel();
+      // Build once after layout is settled (wheelRect is needed for icon radius)
+      requestAnimationFrame(() => buildWheel());
 
       if ("speechSynthesis" in window) {
         window.speechSynthesis.onvoiceschanged = () => {};
